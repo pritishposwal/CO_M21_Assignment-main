@@ -3,22 +3,22 @@ opcodes={"add":"00000","sub":"00001","movimm":"00010","movreg":"00011","ld":"001
              "rs":"01000","ls":"01001","xor":"01010","or":"01011","and":"01100","not":"01101","cmp":"01110","jmp":"01111",
              "jlt":"10000","jgt":"10001","je":"10010","hlt":"10011"}
 registers={"R0":"000","R1":"001","R2":"010","R3":"011","R4":"100","R5":"101","R6":"110","FLAGS":"111"}
-labels={}
-ldst={}
-def errordetection(temp, count, totline):
+labels={}  #dict to store mylabel
+ldst={} #stores mem_address
+def errordetection(temp, count, totline):  #temp-->single line instr, count-->no of instr, totline-->last instr of file
         lst=temp.split()
         mlabel=lst[0]
         if(mlabel in labels.keys()):
-            lst.remove(lst[0])
+            lst.remove(lst[0])  #removing label name
         if(len(lst)==1):
-            if(lst[0]=="hlt" and count==totline):
+            if(lst[0]=="hlt" and count==totline):  #making sure hlt is last
                 return 1
             else:
                 print("General syntax error",end=" ")
                 return 0
         elif(len(lst)==2):
             label=lst[0]
-            value=lst[1]    # jgt loop loop ==mylabel
+            value=lst[1]    # making sure var is alphanumeric or _
             if(label=="var" or label=="jgt" or label=="je" or label=="jmp" or label=="jlt"):
                 if(label=="var"):
                     for i in value:
@@ -61,7 +61,7 @@ def errordetection(temp, count, totline):
                        else:
                            print("Invalid value")
                    elif(label=="ld" or label=="st"):
-                       if(ind2 in ldst.keys()):
+                       if(ind2 in ldst.keys()): #checking if mem_add is correct binary
                            return 1
                        else :
                            print("Invalid variable")
@@ -90,10 +90,10 @@ def check(file):
     countr=1
     for temp in file.split("\n"):
         temp_lable= temp.split()
-        if(temp_lable[0][-1]==":"):
+        if(temp_lable[0][-1]==":"):  #making sure that label is followed by :
             labels[temp[0]]=countr
         countr+=1
-def vardict(file):
+def vardict(file): #dictionary for declared variables
     countr = 1
     for temp in file.split("\n"):
         temp_lable = temp.split()
