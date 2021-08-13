@@ -1,9 +1,12 @@
-from sys import stdin
+import os
 def main():
-    from sys import stdin
-    for line in stdin:
-        if line == '':  # If empty string is read then stop the loop
-            break
-        print(line)  # perform some operation(s) on given string
+    # here 0 and 10**6 represents starting point and end point in bytes.
+    lines = os.read(0, 10 ** 6).strip().splitlines()
+    file=""
+    for x in lines:
+        line = x.decode('utf-8')  # convert bytes-like object to string
+        file+=line
+        file+="\n"
+    print(file)
 if __name__=="__main__":
     main()
