@@ -9,10 +9,24 @@ def errordetection(temp):
             if(lst[0]=="hlt"):
                 return 1
             else:
-                print("General syntax error")
+                print("General syntax error",end=" ")
                 return 0
         elif(len(lst)==2):
-            pass
+            label=lst[0]
+            value=lst[1]
+            if(label=="var" or label=="jgt" or label=="je" or label=="jmp" or label=="jlt"):
+                if(label=="var"):
+                    for i in value:
+                        if(i in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_"):
+                            continue
+                        else:
+                            print("variable name incorrect",end=" ")
+                            return 0
+                elif():
+                    pass
+            else:
+                print("Typo in instruction name ",end=" ")
+                return 0
         elif(len(lst)==3):
             pass
         elif(len(lst)==4):
@@ -30,10 +44,13 @@ def main():
         file+="\n"
     print(file)
     flag=1
+    counter=1
     for temp in file.split("\n"):
         flag=errordetection(temp)
         if(flag==0):
+            print("and line number is",counter)
             break
+        counter+=1
     if(flag==1):
         process(file)
 if __name__=="__main__":
