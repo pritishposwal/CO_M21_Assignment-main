@@ -8,6 +8,7 @@ ldst={} #stores  variable and mem_address in fromt of that
 def errordetection(temp, count, totline):  #temp-->single line instr, count-->no of instr, totline-->last instr of file
         lst=temp.split()
         mlabel=lst[0]
+        #print(lst)
         if(mlabel in labels.keys()):
             lst.remove(lst[0])  #removing label name
         if(len(lst)==1):
@@ -32,7 +33,7 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
                     if(val in labels.values()):
                         return 1
                     else :
-                        print("label not found")
+                        print("label not found",end=" ")
                         return 0
             else:
                 print("Typo in instruction name ",end=" ")
@@ -41,33 +42,33 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
             label=lst[0]
             ind1=lst[1]
             ind2=lst[2]
-            if(label=="mov" or label==" div " or label=="ld" or label==" st" or label=="rs" or label=="ls" or label=="not" or label=="cmp"):
+            if(label=="mov" or label=="div" or label=="ld" or label=="st" or label=="rs" or label=="ls" or label=="not" or label=="cmp"):
                 if(ind1 in registers.keys()):
                    if(label=="mov"):
                        if(ind2 in registers.keys() or ind2[0]=="$"and 0<=int(ind2[1:])<=255):
                            return 1
                        else:
-                           print("Invalid Syntax for mov")
+                           print("Invalid Syntax for mov",end=" ")
                            return 0
                    elif(label=="div" or label=="not" or label=="cmp" ):
                        if(ind2 in registers.keys()):
                            return 1
                        else :
-                           print("Invalid second registers")
+                           print("Invalid second registers",end=" ")
                            return 0
                    elif(label=="rs" or label=="ls"):
                        if ( ind2[0] == "$" and  0 <= int(ind2[1:]) <= 255):
                            return 1
                        else:
-                           print("Invalid value")
+                           print("Invalid value",end=" ")
                    elif(label=="ld" or label=="st"):
                        if(ind2 in ldst.keys()): #checking if mem_add is correct binary
                            return 1
                        else :
-                           print("Invalid variable")
+                           print("Invalid variable",end=" ")
                            return 0
                 else:
-                   print("invalid registers")
+                   print("invalid registers",end=" ")
             else:
                 print("Typo in instruction name ", end=" ")
         elif(len(lst)==4):
@@ -79,15 +80,18 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
                 if( r1 in registers and r2 in registers and r3 in registers  ):
                     return 1
                 else :
-                    print("Inavlid register")
+                    print("Inavlid register",end=" ")
             else :
                 print("Typo in instruction name ", end=" ")
         else:
-            print("general syntax error")
+            print("general syntax error",end=" ")
+def decimalToBinary(n):
+    return bin(n).replace("0b","")
 def process(file):
     lines=file.split("\n")
-    lngth=len(lines)-len(ldst)
+    lngth=len(lines)-len(ldst)-1
     cnt=1
+    print("\n")
     for inst in lines:
         stm =inst.split()
         if(stm[0] in labels):
@@ -96,10 +100,10 @@ def process(file):
             print(opcodes["hlt"]+"00000000000")
             break
         elif(len(stm)==2):
-
             strng=""
-            strng+=opcodes[stm[0]]+"000"
-            print(strng+stm[1])
+            if(stm[0]!="var"):
+                strng+=opcodes[stm[0]]+"000"
+                print(strng+stm[1])
         elif(len(stm)==3):
             if(stm[0]=="mov"):
                 if(stm[2] in registers):
@@ -110,7 +114,9 @@ def process(file):
                 else:
                     strng=opcodes[stm[0]]
                     strng+=registers[stm[1]]
-                    Str2=str(bin(int(registers[stm[2][1:]])))
+                    Str2=decimalToBinary(int(stm[2][1:]))
+                    temp=len(Str2)
+                    Str2=("0"*(8-temp))+Str2
                     strng+=Str2
                     print(strng)
             elif(stm[0]=="div" or stm[0]=="cmp" or stm[0]=="not"):
@@ -123,13 +129,19 @@ def process(file):
                 strng=""
                 strng+=opcodes[stm[0]]
                 strng+=registers[stm[1]]
-                strng+=str(bin(lngth+cnt-1))
+                Str2=str(decimalToBinary(lngth+int(ldst[stm[2]]-1)))
+                temp = len(Str2)
+                Str2 = ("0" * (8 - temp)) + Str2
+                strng+=Str2
                 print(strng)
             elif(stm[0]=="rs" or stm[0]=="ls"):
                 strng=""
                 strng+=opcodes[stm[0]]
                 strng+=registers[stm[1]]
-                strng+=str(bin(int(stm[2][1:])))
+                Str2=str(decimalToBinary(int(stm[2][1:])))
+                temp = len(Str2)
+                Str2 = ("0" * (8 - temp)) + Str2
+                strng += Str2
                 print(strng)
         elif(len(stm)==4):
             strng=""
@@ -138,20 +150,21 @@ def process(file):
             strng+=registers[stm[1]]+registers[stm[2]]+registers[stm[3]]
             print(strng)
         cnt+=1
-    pass
+        if(cnt==len(lines)):
+            break
 def check(file):
     countr=1
     for temp in file.split("\n"):
         temp_lable= temp.split()
-        if(temp_lable[0][-1]==":"):  #making sure that label is followed by :
+        if(len(temp_lable)>=1 and temp_lable[0][-1]==":"):  #making sure that label is followed by :
             labels[temp[0]]=countr
         countr+=1
 def vardict(file): #dictionary for declared variables
     countr = 1
     for temp in file.split("\n"):
         temp_lable = temp.split()
-        if (temp_lable[0] == "var"):
-            labels[temp+temp_lable[1]] = countr
+        if (len(temp_lable)>=2 and temp_lable[0] == "var"):
+            ldst[temp_lable[1]] = countr
         countr += 1
 def main():
     lines = os.read(0, 10 ** 6).strip().splitlines()
@@ -160,16 +173,20 @@ def main():
         line = x.decode('utf-8')  # convert bytes-like object to string
         file+=line
         file+="\n"
-    print(file)
+    #print(file)
     flag=1
     counter=1
     lt=file.split("\n")
+    vardict(file)
+    check(file)
     for temp in lt:
-        flag=errordetection(temp, counter,len(lt))
+        flag=errordetection(temp, counter,len(lt)-1)
         if(flag==0):
             print("and line number is",counter)
             break
         counter+=1
+        if (counter == len(lt)):
+            break
     if(flag==1):
         process(file)
 if __name__=="__main__":
