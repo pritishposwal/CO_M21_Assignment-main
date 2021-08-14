@@ -1,10 +1,10 @@
 import os
-opcodes={"add":"00000","sub":"00001","movimm":"00010","movreg":"00011","ld":"00100","st":"00101","mul":"00110","div":"00111",
+opcodes={"add":"00000","sub":"00001","mov":"00010","ld":"00100","st":"00101","mul":"00110","div":"00111",
              "rs":"01000","ls":"01001","xor":"01010","or":"01011","and":"01100","not":"01101","cmp":"01110","jmp":"01111",
              "jlt":"10000","jgt":"10001","je":"10010","hlt":"10011"}
 registers={"R0":"000","R1":"001","R2":"010","R3":"011","R4":"100","R5":"101","R6":"110","FLAGS":"111"}
 labels={}  #dict to store mylabel
-ldst={} #stores mem_address
+ldst={} #stores  variable and mem_address in fromt of that
 def errordetection(temp, count, totline):  #temp-->single line instr, count-->no of instr, totline-->last instr of file
         lst=temp.split()
         mlabel=lst[0]
@@ -84,7 +84,60 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
                 print("Typo in instruction name ", end=" ")
         else:
             print("general syntax error")
-def process():
+def process(file):
+    lines=file.split("\n")
+    lngth=len(lines)-len(ldst)
+    cnt=1
+    for inst in lines:
+        stm =inst.split()
+        if(stm[0] in labels):
+            stm.remove(stm[0])
+        if(len(stm )==1):
+            print(opcodes["hlt"]+"00000000000")
+            break
+        elif(len(stm)==2):
+
+            strng=""
+            strng+=opcodes[stm[0]]+"000"
+            print(strng+stm[1])
+        elif(len(stm)==3):
+            if(stm[0]=="mov"):
+                if(stm[2] in registers):
+                    strng="00011"
+                    strng+="00000"
+                    strng+=registers[stm[1]]+registers[stm[2]]
+                    print(strng)
+                else:
+                    strng=opcodes[stm[0]]
+                    strng+=registers[stm[1]]
+                    Str2=str(bin(int(registers[stm[2][1:]])))
+                    strng+=Str2
+                    print(strng)
+            elif(stm[0]=="div" or stm[0]=="cmp" or stm[0]=="not"):
+                strng=""
+                strng+=opcodes[stm[0]]
+                strng+="00000"
+                strng+=registers[stm[1]]+registers[stm[2]]
+                print(strng)
+            elif(stm[0]=="ld" or stm[0]=="st"):
+                strng=""
+                strng+=opcodes[stm[0]]
+                strng+=registers[stm[1]]
+                strng+=str(bin(lngth+cnt-1))
+                print(strng)
+            elif(stm[0]=="rs" or stm[0]=="ls"):
+                strng=""
+                strng+=opcodes[stm[0]]
+                strng+=registers[stm[1]]
+                strng+=str(bin(int(stm[2][1:])))
+                print(strng)
+        elif(len(stm)==4):
+            strng=""
+            strng+=opcodes[stm[0]]
+            strng+="00"
+            strng+=registers[stm[1]]+registers[stm[2]]+registers[stm[3]]
+            print(strng)
+        cnt+=1
     pass
 def check(file):
     countr=1
