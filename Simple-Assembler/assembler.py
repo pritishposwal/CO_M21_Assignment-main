@@ -28,11 +28,10 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
                             print("variable name incorrect",end=" ")
                             return 0
                 elif(label=="jgt" or label=="je" or label=="jlt" or label =="jmp"):
-                    val = int(value, 2)
-                    if(val in labels.values()):
+                    if(value in labels.keys()):
                         return 1
                     else :
-                        print("label not found",end=" ")
+                        print("incorrect label",end=" ")
                         return 0
             else:
                 print("Typo in instruction name ",end=" ")
