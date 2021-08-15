@@ -8,7 +8,8 @@ ldst={} #stores  variable and mem_address in fromt of that
 def errordetection(temp, count, totline):  #temp-->single line instr, count-->no of instr, totline-->last instr of file
         lst=temp.split()
         mlabel=lst[0]
-        if(mlabel in labels.keys()):
+        templ=len(mlabel)
+        if(mlabel[:templ-1] in labels.keys()):
             lst.remove(lst[0])  #removing label name
         if(len(lst)==1):
             if(lst[0]=="hlt" and count==totline):  #making sure hlt is last
@@ -30,8 +31,9 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
                 elif(label=="jgt" or label=="je" or label=="jlt" or label =="jmp"):
                     if(value in labels.keys()):
                         return 1
-                    else :
+                    else:
                         print("incorrect label",end=" ")
+                        print(labels)
                         return 0
             else:
                 print("Typo in instruction name ",end=" ")
@@ -91,16 +93,21 @@ def process(file):
     cnt=1
     for inst in lines:
         stm =inst.split()
-        if(stm[0] in labels):
+        templ=len(stm[0])
+        if(stm[0][:templ-1] in labels):
             stm.remove(stm[0])
-        if(len(stm )==1):
+        if(len(stm)==1):
             print(opcodes["hlt"]+"00000000000")
             break
         elif(len(stm)==2):
             strng=""
             if(stm[0]!="var"):
                 strng+=opcodes[stm[0]]+"000"
-                print(strng+stm[1])
+                Str2=str(decimalToBinary(int(labels[stm[1]]-2)))
+                temp = len(Str2)
+                Str2 = ("0" * (8 - temp)) + Str2
+                strng+=Str2
+                print(strng)
         elif(len(stm)==3):
             if(stm[0]=="mov"):
                 if(stm[2] in registers):
@@ -154,7 +161,9 @@ def check(file):
     for temp in file.split("\n"):
         temp_lable= temp.split()
         if(len(temp_lable)>=1 and temp_lable[0][-1]==":"):  #making sure that label is followed by :
-            labels[temp_lable[0]]=countr
+            tempstore = temp_lable[0]
+            templength = len(tempstore)
+            labels[temp_lable[0][0:templength-1]]=countr
         countr+=1
 def vardict(file): #dictionary for declared variables
     countr = 1
