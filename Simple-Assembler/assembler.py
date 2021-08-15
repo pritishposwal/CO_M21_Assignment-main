@@ -155,7 +155,7 @@ def check(file):
     for temp in file.split("\n"):
         temp_lable= temp.split()
         if(len(temp_lable)>=1 and temp_lable[0][-1]==":"):  #making sure that label is followed by :
-            labels[temp[0]]=countr
+            labels[temp_lable[0]]=countr
         countr+=1
 def vardict(file): #dictionary for declared variables
     countr = 1
