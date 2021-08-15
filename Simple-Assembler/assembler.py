@@ -8,7 +8,6 @@ ldst={} #stores  variable and mem_address in fromt of that
 def errordetection(temp, count, totline):  #temp-->single line instr, count-->no of instr, totline-->last instr of file
         lst=temp.split()
         mlabel=lst[0]
-        #print(lst)
         if(mlabel in labels.keys()):
             lst.remove(lst[0])  #removing label name
         if(len(lst)==1):
@@ -91,7 +90,6 @@ def process(file):
     lines=file.split("\n")
     lngth=len(lines)-len(ldst)-1
     cnt=1
-    print("\n")
     for inst in lines:
         stm =inst.split()
         if(stm[0] in labels):
