@@ -36,7 +36,7 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
                         print(labels)
                         return 0
             else:
-                print("Typo in instruction name ",end=" ")
+                print("Typo in instruction name",end=" ")
                 return 0
         elif(len(lst)==3):
             label=lst[0]
@@ -70,7 +70,8 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
                 else:
                    print("invalid registers",end=" ")
             else:
-                print("Typo in instruction name ", end=" ")
+                print("Invalid instruction syntax", end=" ")
+                return 0
         elif(len(lst)==4):
             label =lst[0]
             r1=lst[1]
