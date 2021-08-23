@@ -22,13 +22,14 @@ def flagset(overflow,lessthan,greaterthan,equal):
     global FLAG
     FLAG="0"*12
     FLAG+=str(overflow)+str(lessthan)+str(greaterthan)+str(equal)
-def bincomp(len,num):
-    binpc = decimalToBinary(num)
-    print(type(num),True)
-    templ=len(binpc)
-    if (templ != num):
-        final = (num - len(binpc)) * "0"
-        final += binpc
+def bincomp(length,num):
+    binpc1 = decimalToBinary(num)
+    tempval=length-len(binpc1)
+    if (tempval!=0):
+        final = (length - len(binpc1)) * "0"
+        final += binpc1
+    else:
+        final=binpc1
     return final
 def typea(operation, reg1, reg2, reg3):
     if (operation == "add"):
@@ -40,12 +41,13 @@ def typea(operation, reg1, reg2, reg3):
             temp=str(decimalToBinary(registers[reg1]))
             templ=len(temp)
             finalstore=temp[templ-16:]
-            registers[reg1]=int(int(finalstore),2)
+            registers[reg1]=int(finalstore,2)
+        global pc
         fcounter = bincomp(8, pc)
         r0bin = bincomp(16, registers["000"])
-        r1bin = bincomp(16, registers[reg1])
-        r2bin = bincomp(16, registers[reg2])
-        r3bin = bincomp(16, registers[reg3])
+        r1bin = bincomp(16, registers["001"])
+        r2bin = bincomp(16, registers["010"])
+        r3bin = bincomp(16, registers["011"])
         r4bin = bincomp(16, registers["100"])
         r5bin = bincomp(16, registers["101"])
         r6bin = bincomp(16, registers["110"])
@@ -63,15 +65,14 @@ def main():
     lt = file.split("\n")
     global pc
     pc=0
-    print(lt)
     while(True):
         instruction=lt[pc]
-        print(instruction)
         temp=instruction[0:5]
         if(temp=="01111" or temp=="10000" or temp=="10001" or temp=="10010"):
             pass
         else:
             if(opcodes[temp]=="add" or opcodes[temp]=="mul" or opcodes[temp]=="sub" or opcodes[temp]=="xor" or opcodes[temp]=="or" or opcodes[temp]=="and"):
                 typea(opcodes[temp],instruction[7:10],instruction[10:13],instruction[13:])
+                break
 if __name__=="__main__":
     main()
