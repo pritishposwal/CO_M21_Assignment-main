@@ -2,7 +2,7 @@ import os
 opcodes={'00000': 'add', '00001': 'sub', '00010': 'mov', '00100': 'ld', '00101': 'st', '00110': 'mul', '00111': 'div', '01000': 'rs',
          '01001': 'ls', '01010': 'xor', '01011': 'or', '01100': 'and', '01101': 'not', '01110': 'cmp', '01111': 'jmp', '10000': 'jlt',
          '10001': 'jgt', '10010': 'je', '10011': 'hlt'}
-registers={"000":0,"001":0,"010":1,"011":0,"100":0,"101":0,"110":0,"111":0}
+registers={"000":0,"001":0,"010":5,"011":0,"100":0,"101":0,"110":0,"111":0}
 R0=0
 R1=0
 R2=0
@@ -31,28 +31,56 @@ def bincomp(length,num):
     else:
         final=binpc1
     return final
+def printreg():
+    global pc
+    fcounter = bincomp(8, pc)
+    r0bin = bincomp(16, registers["000"])
+    r1bin = bincomp(16, registers["001"])
+    r2bin = bincomp(16, registers["010"])
+    r3bin = bincomp(16, registers["011"])
+    r4bin = bincomp(16, registers["100"])
+    r5bin = bincomp(16, registers["101"])
+    r6bin = bincomp(16, registers["110"])
+    r7bin = bincomp(16, registers["111"])
+    print(fcounter, r0bin, r1bin, r2bin, r3bin, r4bin, r5bin, r6bin, r7bin)
 def typea(operation, reg1, reg2, reg3):
+    global overflow
     if (operation == "add"):
         registers[reg1]=registers[reg2]+registers[reg3]
         if (registers[reg1] > 65535):
-            global overflow
             overflow=1
             flagset(overflow,lessthan,greaterthan,equal)
             temp=str(decimalToBinary(registers[reg1]))
             templ=len(temp)
             finalstore=temp[templ-16:]
             registers[reg1]=int(finalstore,2)
-        global pc
-        fcounter = bincomp(8, pc)
-        r0bin = bincomp(16, registers["000"])
-        r1bin = bincomp(16, registers["001"])
-        r2bin = bincomp(16, registers["010"])
-        r3bin = bincomp(16, registers["011"])
-        r4bin = bincomp(16, registers["100"])
-        r5bin = bincomp(16, registers["101"])
-        r6bin = bincomp(16, registers["110"])
-        r7bin = bincomp(16, registers["111"])
-        print(fcounter, r0bin, r1bin, r2bin, r3bin, r4bin, r5bin, r6bin, r7bin)
+        printreg()
+    elif(operation=="mul"):
+        registers[reg1] = registers[reg2] * registers[reg3]
+        if (registers[reg1] > 65535):
+            overflow=1
+            flagset(overflow,lessthan,greaterthan,equal)
+            temp=str(decimalToBinary(registers[reg1]))
+            templ=len(temp)
+            finalstore=temp[templ-16:]
+            registers[reg1]=int(finalstore,2)
+        printreg()
+    elif(operation=="sub"):
+        registers[reg1] = registers[reg2] - registers[reg3]
+        if (registers[reg1] < 0):
+            overflow = 1
+            flagset(overflow, lessthan, greaterthan, equal)
+            registers[reg1] = 0
+        printreg()
+    elif(operation=="xor"):
+        registers[reg1]= registers[reg2]^registers[reg3]
+        printreg()
+    elif(operation=="or"):
+        registers[reg1]=registers[reg2] | registers[reg3]
+        printreg()
+    elif(operation=="and"):
+        registers[reg1]=registers[reg2]&registers[reg3]
+        printreg()
 def main():
     lines = os.read(0, 10 ** 6).strip().splitlines()
     file = ""
@@ -74,5 +102,7 @@ def main():
             if(opcodes[temp]=="add" or opcodes[temp]=="mul" or opcodes[temp]=="sub" or opcodes[temp]=="xor" or opcodes[temp]=="or" or opcodes[temp]=="and"):
                 typea(opcodes[temp],instruction[7:10],instruction[10:13],instruction[13:])
                 break
+        pc+=1
+
 if __name__=="__main__":
     main()
