@@ -18,17 +18,12 @@ greaterthan=0
 equal=0
 pc=0
 def comp1(bit_s):
-
     inverse_s = ''
-
     for i in bit_s:
-
         if i == '0':
             inverse_s += '1'
-
         else:
             inverse_s += '0'
-
     return inverse_s
 def decimalToBinary(n):
     return bin(n).replace("0b","")
@@ -108,11 +103,9 @@ def typeb(operation , reg1, value):
          printreg()
 def typec(operation, reg1, reg2):
     if(operation=="div"):
-
         registers["000"]=registers[reg1]//registers[reg2]
         registers["001"]=registers[reg1]%registers[reg2]
         printreg()
-
     elif(operation=="mov"):
         registers[reg1]=registers[reg2]
         printreg()
@@ -133,15 +126,12 @@ def typec(operation, reg1, reg2):
             equal=1
             registers["111"]=1
         printreg()
-
 def typed(operation ,reg, memadd):
     if(operation=="ld"):
         if(memadd not in variable.keys()):
             variable[memadd]=0
         registers[reg]=variable[memadd]
         printreg()
-
-
     elif(operation=="st"):
         if(memadd not in variable.keys()):
             variable[memadd]=0
@@ -149,24 +139,30 @@ def typed(operation ,reg, memadd):
         printreg()
 def typee(operation, memadd):
     global pc ,greaterthan,lessthan,equal
-
     if(operation=="jgt"):
         if(greaterthan==1):
+            printreg()
             pc=int(memadd,2)
             greaterthan=0
-
-
+        else:
+            pc+=1
     elif(operation=="jmp"):
+        printreg()
         pc=int(memadd,2)
     elif(operation=="jlt"):
         if(lessthan==1):
+            printreg()
             pc=int(memadd,2)
             lessthan=0
+        else:
+            pc+=1
     elif(operation== "je"):
         if(equal==1):
+            printreg()
             pc=int(memadd,2)
             equal=0
-    printreg()
+        else:
+            pc+=1
 def hlt(lt):
     for i in range(len(lt)):
         print(lt[i])
@@ -175,10 +171,6 @@ def hlt(lt):
     rem=256-len(lt)-len(variable)
     for i in range(rem):
         print("0"*16)
-
-
-
-
 def main():
     lines = os.read(0, 10 ** 6).strip().splitlines()
     file = ""
@@ -191,24 +183,25 @@ def main():
     lt = file.split("\n")
     global pc
     pc=0
-    while(True):
+    while(lt[pc]!=""):
         instruction=lt[pc]
         temp=instruction[0:5]
-        if(temp=="01111" or temp=="10000" or temp=="10001" or temp=="10010"):
-            pass
-        else:
-            if(opcodes[temp]=="add" or opcodes[temp]=="mul" or opcodes[temp]=="sub" or opcodes[temp]=="xor" or opcodes[temp]=="or" or opcodes[temp]=="and"):
-                typea(opcodes[temp],instruction[7:10],instruction[10:13],instruction[13:])
-            elif(temp=="00010" or opcodes[temp]=="ls" or opcodes[temp]=="rs"):
-                typeb(opcodes[temp],instruction[5:8] ,instruction[8:])
-            elif(opcodes[temp] =="div" or opcodes[temp]=="mov" or opcodes[temp]=="not" or opcodes[temp]=="cmp"):
-                typec(opcodes[temp],instruction[10:13], instruction[13:])
-            elif(opcodes[temp]=="ld" or opcodes[temp]=="st"):
-                typed(opcodes[temp],instruction[5:8],instruction[8:])
-            elif(opcodes[temp]=="jlt" or opcodes[temp]=="jmp" or opcodes[temp]=="je" or opcodes[temp]=="jgt"):
-                typee(opcodes[temp], instruction[8:])
+        if(opcodes[temp]=="add" or opcodes[temp]=="mul" or opcodes[temp]=="sub" or opcodes[temp]=="xor" or opcodes[temp]=="or" or opcodes[temp]=="and"):
+            typea(opcodes[temp],instruction[7:10],instruction[10:13],instruction[13:])
+            pc+=1
+        elif(temp=="00010" or opcodes[temp]=="ls" or opcodes[temp]=="rs"):
+            typeb(opcodes[temp],instruction[5:8] ,instruction[8:])
+            pc+=1
+        elif(opcodes[temp] =="div" or opcodes[temp]=="mov" or opcodes[temp]=="not" or opcodes[temp]=="cmp"):
+            typec(opcodes[temp],instruction[10:13], instruction[13:])
+            pc+=1
+        elif(opcodes[temp]=="ld" or opcodes[temp]=="st"):
+            typed(opcodes[temp],instruction[5:8],instruction[8:])
+            pc+=1
+        elif(opcodes[temp]=="jlt" or opcodes[temp]=="jmp" or opcodes[temp]=="je" or opcodes[temp]=="jgt"):
+            typee(opcodes[temp], instruction[8:])
+        elif(opcodes[temp]=="hlt"):
+            hlt(lt)
             break
-        pc+=1
-
 if __name__=="__main__":
     main()
