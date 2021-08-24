@@ -188,7 +188,7 @@ def hlt(lt):
     for i in range(len(lt)-1):
         print(lt[i])
     for i in variable.keys():
-        print(variable[i])
+        print(bincomp(16,variable[i]))
     rem=256-len(lt)-len(variable)+1
     for i in range(rem):
         print("0"*16)
