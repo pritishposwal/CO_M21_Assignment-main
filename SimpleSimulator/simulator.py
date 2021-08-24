@@ -1,8 +1,8 @@
 import os
-opcodes={'00000': 'add', '00001': 'sub', '00010': 'mov', '00100': 'ld', '00101': 'st', '00110': 'mul', '00111': 'div', '01000': 'rs',
+opcodes={'00000': 'add', '00001': 'sub', '00010': 'mov','00011':'mov', '00100': 'ld', '00101': 'st', '00110': 'mul', '00111': 'div', '01000': 'rs',
          '01001': 'ls', '01010': 'xor', '01011': 'or', '01100': 'and', '01101': 'not', '01110': 'cmp', '01111': 'jmp', '10000': 'jlt',
          '10001': 'jgt', '10010': 'je', '10011': 'hlt'}
-registers={"000":32,"001":0,"010":5,"011":2,"100":0,"101":0,"110":0,"111":0}
+registers={"000":0,"001":0,"010":0,"011":0,"100":0,"101":0,"110":0,"111":0}
 variable={}
 R0=0
 R1=0
@@ -63,6 +63,8 @@ def typea(operation, reg1, reg2, reg3):
             templ=len(temp)
             finalstore=temp[templ-16:]
             registers[reg1]=int(finalstore,2)
+        else:
+            registers["111"]=0
         printreg()
     elif(operation=="mul"):
         registers[reg1] = registers[reg2] * registers[reg3]
@@ -73,6 +75,8 @@ def typea(operation, reg1, reg2, reg3):
             templ=len(temp)
             finalstore=temp[templ-16:]
             registers[reg1]=int(finalstore,2)
+        else:
+            registers["111"]=0
         printreg()
     elif(operation=="sub"):
         registers[reg1] = registers[reg2] - registers[reg3]
@@ -80,37 +84,48 @@ def typea(operation, reg1, reg2, reg3):
             overflow = 1
             flagset(overflow, lessthan, greaterthan, equal)
             registers[reg1] = 0
+        else:
+            registers["111"]=0
         printreg()
     elif(operation=="xor"):
         registers[reg1]= registers[reg2]^registers[reg3]
+        registers["111"]=0
         printreg()
     elif(operation=="or"):
         registers[reg1]=registers[reg2] | registers[reg3]
+        registers["111"]=0
         printreg()
     elif(operation=="and"):
         registers[reg1]=registers[reg2]&registers[reg3]
+        registers["111"]=0
         printreg()
 def typeb(operation , reg1, value):
      label=operation
      if(label=="mov" ):
          registers[reg1]=int(value,2)
+         registers["111"]=0
          printreg()
      elif(label=="ls"):
          registers[reg1]=registers[reg1]<<int(value,2)
+         registers["111"]=0
          printreg()
      elif(label=="rs"):
          registers[reg1]=registers[reg1]>>int(value,2)
+         registers["111"]=0
          printreg()
 def typec(operation, reg1, reg2):
     if(operation=="div"):
         registers["000"]=registers[reg1]//registers[reg2]
         registers["001"]=registers[reg1]%registers[reg2]
+        registers["111"]=0
         printreg()
     elif(operation=="mov"):
         registers[reg1]=registers[reg2]
+        registers["111"]=0
         printreg()
     elif(operation=="not"):
         registers[reg1]=int(comp1(bincomp(16,registers[reg2])),2)
+        registers["111"]=0
         printreg()
     elif(operation=="cmp"):
         rr1=registers[reg1]
@@ -131,26 +146,31 @@ def typed(operation ,reg, memadd):
         if(memadd not in variable.keys()):
             variable[memadd]=0
         registers[reg]=variable[memadd]
+        registers["111"] = 0
         printreg()
     elif(operation=="st"):
         if(memadd not in variable.keys()):
             variable[memadd]=0
         variable[memadd]=registers[reg]
+        registers["111"] = 0
         printreg()
 def typee(operation, memadd):
     global pc ,greaterthan,lessthan,equal
     if(operation=="jgt"):
         if(greaterthan==1):
+            registers["111"] = 0
             printreg()
             pc=int(memadd,2)
             greaterthan=0
         else:
             pc+=1
     elif(operation=="jmp"):
+        registers["111"] = 0
         printreg()
         pc=int(memadd,2)
     elif(operation=="jlt"):
         if(lessthan==1):
+            registers["111"] = 0
             printreg()
             pc=int(memadd,2)
             lessthan=0
@@ -158,17 +178,18 @@ def typee(operation, memadd):
             pc+=1
     elif(operation== "je"):
         if(equal==1):
+            registers["111"] = 0
             printreg()
             pc=int(memadd,2)
             equal=0
         else:
             pc+=1
 def hlt(lt):
-    for i in range(len(lt)):
+    for i in range(len(lt)-1):
         print(lt[i])
     for i in variable.keys():
         print(variable[i])
-    rem=256-len(lt)-len(variable)
+    rem=256-len(lt)-len(variable)+1
     for i in range(rem):
         print("0"*16)
 def main():
@@ -201,6 +222,8 @@ def main():
         elif(opcodes[temp]=="jlt" or opcodes[temp]=="jmp" or opcodes[temp]=="je" or opcodes[temp]=="jgt"):
             typee(opcodes[temp], instruction[8:])
         elif(opcodes[temp]=="hlt"):
+            registers["111"]=0
+            printreg()
             hlt(lt)
             break
 if __name__=="__main__":
