@@ -1,9 +1,13 @@
 import os
+import matplotlib.pyplot as plt
+import numpy as np
 opcodes={'00000': 'add', '00001': 'sub', '00010': 'mov','00011':'mov', '00100': 'ld', '00101': 'st', '00110': 'mul', '00111': 'div', '01000': 'rs',
          '01001': 'ls', '01010': 'xor', '01011': 'or', '01100': 'and', '01101': 'not', '01110': 'cmp', '01111': 'jmp', '10000': 'jlt',
          '10001': 'jgt', '10010': 'je', '10011': 'hlt'}
 registers={"000":0,"001":0,"010":0,"011":0,"100":0,"101":0,"110":0,"111":0}
 variable={}
+xcord=[]
+ycord=[]
 R0=0
 R1=0
 R2=0
@@ -182,8 +186,7 @@ def typee(operation, memadd):
             printreg()
             pc+=1
     elif(operation== "je"):
-        print(registers,"hello")
-        if(registers["111"]==0):
+        if(registers["111"]==1):
             registers["111"] = 0
             printreg()
             pc=int(memadd,2)
@@ -212,7 +215,13 @@ def main():
     lt = file.split("\n")
     global pc
     pc=0
+    counter=0
+    plt.xlabel("cycle")
+    plt.ylabel("Address")
+    plt.title("Memory accesses vs cycle")
     while(lt[pc]!=""):
+        xcord.append(counter)
+        ycord.append(pc)
         instruction=lt[pc]
         temp=instruction[0:5]
         if(opcodes[temp]=="add" or opcodes[temp]=="mul" or opcodes[temp]=="sub" or opcodes[temp]=="xor" or opcodes[temp]=="or" or opcodes[temp]=="and"):
@@ -234,5 +243,8 @@ def main():
             printreg()
             hlt(lt)
             break
+        counter+=1
+    plt.plot(xcord,ycord,linewidth=4)
+    plt.show()
 if __name__=="__main__":
     main()
