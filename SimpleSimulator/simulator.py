@@ -244,6 +244,8 @@ def main():
             hlt(lt)
             break
         counter+=1
+    plt.xlim(0,counter)
+    plt.ylim(0,pc)
     plt.plot(xcord,ycord,linewidth=4)
     plt.show()
 if __name__=="__main__":
