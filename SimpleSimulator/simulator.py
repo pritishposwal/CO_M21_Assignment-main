@@ -128,6 +128,7 @@ def typec(operation, reg1, reg2):
         registers["111"]=0
         printreg()
     elif(operation=="cmp"):
+        global greaterthan,lessthan,equal
         rr1=registers[reg1]
         rr2 = registers[reg2]
         global greaterthan, lessthan, equal
@@ -157,32 +158,39 @@ def typed(operation ,reg, memadd):
 def typee(operation, memadd):
     global pc ,greaterthan,lessthan,equal
     if(operation=="jgt"):
-        if(greaterthan==1):
+        if(registers["111"]==2):
             registers["111"] = 0
             printreg()
             pc=int(memadd,2)
             greaterthan=0
         else:
+            registers["111"] = 0
+            printreg()
             pc+=1
     elif(operation=="jmp"):
         registers["111"] = 0
         printreg()
         pc=int(memadd,2)
     elif(operation=="jlt"):
-        if(lessthan==1):
+        if(registers["111"]==4):
             registers["111"] = 0
             printreg()
             pc=int(memadd,2)
             lessthan=0
         else:
+            registers["111"] = 0
+            printreg()
             pc+=1
     elif(operation== "je"):
-        if(equal==1):
+        print(registers,"hello")
+        if(registers["111"]==0):
             registers["111"] = 0
             printreg()
             pc=int(memadd,2)
             equal=0
         else:
+            registers["111"]=0
+            printreg()
             pc+=1
 def hlt(lt):
     for i in range(len(lt)-1):
