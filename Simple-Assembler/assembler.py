@@ -33,7 +33,6 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
                         return 1
                     else:
                         print("incorrect label",end=" ")
-                        print(labels)
                         return 0
             else:
                 print("Typo in instruction name",end=" ")
@@ -178,8 +177,9 @@ def main():
     file=""
     for x in lines:
         line = x.decode('utf-8')  # convert bytes-like object to string
-        file+=line
-        file+="\n"
+        if(line!=""):
+            file+=line
+            file+="\n"
     #print(file)
     flag=1
     counter=1
