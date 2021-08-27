@@ -32,7 +32,7 @@ def errordetection(temp, count, totline):  #temp-->single line instr, count-->no
                     if(value in labels.keys()):
                         return 1
                     else:
-                        print("incorrect label",end=" ")
+                        print("incorrect label", end=" ")
                         return 0
             else:
                 print("Typo in instruction name",end=" ")
